@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 
 import uk.co.sloshyd.mybakingapp.R;
@@ -17,14 +14,14 @@ import uk.co.sloshyd.mybakingapp.data.IngredientsData;
 import uk.co.sloshyd.mybakingapp.data.InstructionsData;
 import uk.co.sloshyd.mybakingapp.data.RecipeData;
 
-public class RecipeListActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<String>, MasterFragment.FragmentDataCallback {
+public class RecipeListActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<String>, RecipeFragment.FragmentDataCallback {
 
     private static final String TAG = RecipeListActivity.class.getSimpleName();
     private static final int DATA_LOADER_ID = 100;
     private ArrayList<RecipeData> mRecipes;
     private ArrayList<IngredientsData> mIngredients;
     private ArrayList<InstructionsData> mInstructions;
-    private MasterFragment mMasterFragment;
+    private RecipeFragment mRecipeFragment;
 
 
     @Override
@@ -34,13 +31,13 @@ public class RecipeListActivity extends AppCompatActivity implements android.app
 
         getLoaderManager().initLoader(DATA_LOADER_ID, null, this);
 
-         mMasterFragment= new MasterFragment();
-         mMasterFragment.setFragmentDataCallback(this);
+         mRecipeFragment = new RecipeFragment();
+         mRecipeFragment.setFragmentDataCallback(this);
 
 
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction()
-                .add(R.id.master_list_fragment_container,mMasterFragment)
+                .add(R.id.master_list_fragment_container, mRecipeFragment)
                 .commit();
 
     }
@@ -54,23 +51,9 @@ public class RecipeListActivity extends AppCompatActivity implements android.app
     @Override
     public void onLoadFinished(android.content.Loader<String> loader, String data) {
         mRecipes = Utils.getRecipes(data);
-
-        //TODO - REMOVE THIS
-        for (RecipeData dataum : mRecipes) {
-            Log.i(TAG, "RECIPES " + dataum.toString());
-        }
+        mRecipeFragment.setFragmentData(mRecipes);
         mIngredients = Utils.getIngredients(data);
-        for (IngredientsData datum1 : mIngredients) {
-            Log.i(TAG, "INGREDIENTS " + datum1.toString());
-        }
         mInstructions = Utils.getInstructions(data);
-        Log.i(TAG, "SIZE "+ mInstructions.size());
-
-        for (InstructionsData datum2 : mInstructions) {
-            Log.i(TAG, "INSTRUCTIONS " + datum2.toString());
-        }
-
-        mMasterFragment.setFragmentData(mRecipes);
 
     }
 
@@ -83,7 +66,7 @@ public class RecipeListActivity extends AppCompatActivity implements android.app
     @Override
     public void fragmentData(String data) {
 
-        Intent intent = new Intent (this, IngredientsActivity.class);
+        Intent intent = new Intent (this, DetailsActivity.class);
         ArrayList<InstructionsData> instructionToSend = getInstructionsToSend(data);
         intent.putExtra("instructions",instructionToSend);
         intent.putExtra("ingredients", getIngredientsToSend(data));

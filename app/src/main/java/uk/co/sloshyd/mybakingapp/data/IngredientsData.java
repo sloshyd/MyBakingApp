@@ -3,8 +3,6 @@ package uk.co.sloshyd.mybakingapp.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import uk.co.sloshyd.mybakingapp.ui.IngredientsFragment;
-
 /**
  * Created by Darren on 25/01/2018.
  */

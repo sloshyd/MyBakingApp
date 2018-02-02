@@ -23,10 +23,12 @@ public class RecipeListRecyclerAdapter extends RecyclerView.Adapter<RecipeListRe
     private Context mContext;
     public static final String TAG = RecipeListRecyclerAdapter.class.getSimpleName();
     public OnItemClickCallback mOnItemClickCallback;
+    private boolean mTwoPanes;
 
-    public RecipeListRecyclerAdapter (Context context){
+
+    public RecipeListRecyclerAdapter (Context context, boolean twoPanes){
         mContext = context;
-
+        mTwoPanes = twoPanes;
     }
 
     //used for communication with Fragment
@@ -36,7 +38,13 @@ public class RecipeListRecyclerAdapter extends RecyclerView.Adapter<RecipeListRe
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.recipe_list_item, parent, false);
+        View view;
+        if(mTwoPanes = false){
+            view = inflater.inflate(R.layout.recipe_list_item, parent, false);
+
+        } else{
+            view =inflater.inflate(R.layout.recipe_list_item, parent, false);
+        }
         return new ViewHolder(view);
     }
 

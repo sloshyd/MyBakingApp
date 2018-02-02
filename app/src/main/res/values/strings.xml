@@ -2,7 +2,6 @@
     <string name="app_name">My Baking App</string>
     <string name="error_msg_reponse_code_from_server">Unable to retrieve data - Server Error Code</string>
     <string name="error_closing_input_stream_msg">Error closing input stream</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_label_instruction">Instructions</string>
+    <string name="tab_label_ingredients">Ingredients</string>
 </resources>

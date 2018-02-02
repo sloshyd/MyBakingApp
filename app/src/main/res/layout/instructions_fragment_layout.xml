@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="uk.co.sloshyd.mybakingapp.ui.IngredientsActivity">
+    tools:context="uk.co.sloshyd.mybakingapp.ui.DetailsActivity">
     >
     <TextView
     android:id="@+id/ingredients_fragment_tv_recipe_name"

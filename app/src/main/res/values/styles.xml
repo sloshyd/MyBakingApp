@@ -8,9 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="RecipeList">
-        <item name="android:textSize">28sp</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:layout_gravity">center_vertical</item>
-    </style>
+    <item name="android:textSize">28sp</item>
+    <item name="android:textAlignment">center</item>
+    <item name="android:layout_gravity">center_vertical</item>
+</style>
+    <style name="IngredientsListItems">
+        <item name="android:textSize">14sp</item>
+     </style>
 
 </resources>

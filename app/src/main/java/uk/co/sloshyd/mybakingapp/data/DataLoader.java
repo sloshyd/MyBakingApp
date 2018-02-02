@@ -40,6 +40,9 @@ public class DataLoader extends AsyncTaskLoader<String> {
         try {
             URL dataUrl = Utils.getDataURL(Utils.DATA_URL);
             response = Utils.getResponseFromHttpUrl(dataUrl);
+            //remove non ASCII char
+            response = response.replaceAll("[^\\p{ASCII}]", "");
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (DeniedByServerException e) {

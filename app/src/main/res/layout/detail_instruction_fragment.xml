@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+<com.google.android.exoplayer2.ui.SimpleExoPlayerView
+    android:id="@+id/detail_instructions_fragment_media_player"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1">
+
+</com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="1">
+
+
+        <ImageView
+            android:id="@+id/detail_instruction_iv_thumbnail"
+            android:layout_width="80dp"
+            android:layout_height="120dp"/>
+        <TextView
+            android:id="@+id/detail_instruction_tv_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:layout_margin="@dimen/list_view_margin"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/detail_instructions_bottom_navigation"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:background="@color/primary"
+        android:layout_weight="0.2">
+
+        <ImageView
+            android:id="@+id/detail_instruction_iv_navigation_back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_arrow_back_white_36dp"/>
+
+        <ImageView
+            android:id="@+id/detail_instruction_iv_navigation_forward"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_arrow_forward_white_36dp"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

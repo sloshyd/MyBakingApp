@@ -30,7 +30,7 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
 
     //used for communication with Fragment
     interface OnItemClickCallback {
-        void onItemSelected(InstructionsData instructionsData);
+        void onItemSelected(int position);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final InstructionsData instructionItem = mData.get(position);
+
         final String recipeId = mData.get(position).getmRecipeId();
         final String stepNumber = mData.get(position).getmStepNumber();
         holder.stepNumber.setText(stepNumber);
@@ -54,8 +54,7 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemClickCallback.onItemSelected(instructionItem);
-                Log.i(TAG, "Recipe id " + recipeId + " " + stepNumber );
+                onItemClickCallback.onItemSelected(position);//return the position in arraylist
 
             }
         });

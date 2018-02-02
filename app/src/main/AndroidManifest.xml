@@ -18,7 +18,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.IngredientsActivity"></activity>
+        <activity android:name=".ui.DetailsActivity"></activity>
+
+        <receiver android:name=".ui.DetailInstructionFragment$MediaReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
+
+
 
 </manifest>
