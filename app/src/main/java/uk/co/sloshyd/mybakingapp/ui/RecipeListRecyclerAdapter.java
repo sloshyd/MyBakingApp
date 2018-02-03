@@ -1,12 +1,16 @@
 package uk.co.sloshyd.mybakingapp.ui;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -57,6 +61,17 @@ public class RecipeListRecyclerAdapter extends RecyclerView.Adapter<RecipeListRe
         String serve = mData.get(position).getmServing();
         holder.serving.setText(serve);
         holder.recipeName.setTag(recipeId);//used to pass recipeId which is needed for ingredients and steps
+        //load image into view with Picasso which will handle any errors
+        if(!mData.get(position).getmImage().isEmpty()){
+            Uri imageUri = Uri.parse(mData.get(position).getmImage());
+            Picasso.with(mContext).load(imageUri)
+                    .resize(100, 100).into(holder.recipeImage);
+
+        }else {
+            holder.recipeImage.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+            Picasso.with(mContext).load(R.drawable.ic_cake_white_48dp).into(holder.recipeImage);
+        }
+
 
         //set onClickListener
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +109,7 @@ public class RecipeListRecyclerAdapter extends RecyclerView.Adapter<RecipeListRe
 
         TextView recipeName;
         TextView serving;
+        ImageView recipeImage;
 
 
         public ViewHolder(View itemView) {
@@ -101,6 +117,7 @@ public class RecipeListRecyclerAdapter extends RecyclerView.Adapter<RecipeListRe
 
           recipeName = itemView.findViewById(R.id.recipe_list_item_tv_recipe_name);
           serving = itemView.findViewById(R.id.recipe_list_item_tv_number_served);
+          recipeImage = itemView.findViewById(R.id.recipe_list_item_iv_picture);
         }
 
 

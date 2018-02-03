@@ -18,17 +18,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.DetailsActivity"></activity>
+        <activity android:name=".ui.DetailsActivity" />
 
         <receiver android:name=".ui.DetailInstructionFragment$MediaReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".RandomRecipeWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
 
-
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/random_recipe_widget_info" />
+        </receiver>
     </application>
-
-
 
 </manifest>

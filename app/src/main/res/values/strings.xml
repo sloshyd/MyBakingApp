@@ -4,4 +4,9 @@
     <string name="error_closing_input_stream_msg">Error closing input stream</string>
     <string name="tab_label_instruction">Instructions</string>
     <string name="tab_label_ingredients">Ingredients</string>
+    <string name="label_step_number">step</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_sample_name">Random Recipe Name</string>
+
 </resources>

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,12 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickCallback(this);
         mAdapter.swapData(mInstructions);
+        if(savedInstanceState != null){
+            int position = savedInstanceState.getInt("position");
 
+            mRecyclerView.scrollToPosition(savedInstanceState.getInt("position"));
+            mAdapter.setSelectedPosition(savedInstanceState.getInt("position"));
+        }
         return rootView;
     }
 
@@ -76,5 +82,11 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
             throw new ClassCastException(context.toString()
                     + " must implement FragmentDataCallback");
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("position",mAdapter.getSelectedPosition());
     }
 }

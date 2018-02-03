@@ -19,6 +19,7 @@ public class DetailsActivity extends AppCompatActivity implements InstructionsFr
     private FragmentManager mFragmentManager;
     private int START_AT_BEGINING = 0;
     private boolean mTwoPane;
+    private int mPosition;
 
     private static final String TAG = DetailsActivity.class.getSimpleName();
 
@@ -27,6 +28,13 @@ public class DetailsActivity extends AppCompatActivity implements InstructionsFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        if(savedInstanceState == null){
+            mPosition = START_AT_BEGINING;
+        } else{
+            mPosition = savedInstanceState.getInt("position");
+            Log.i(TAG, "POSITION  **************  " + mPosition);
+        }
+
         mInstructions = getIntent().getParcelableArrayListExtra("instructions");
         mIngredients = getIntent().getParcelableArrayListExtra("ingredients");
         mFragmentManager = getSupportFragmentManager();
@@ -34,7 +42,7 @@ public class DetailsActivity extends AppCompatActivity implements InstructionsFr
         //get information from Calling Activity
         if (findViewById(R.id.detail_instruction_fragment_container) != null) {
             mTwoPane = true;
-            setUpInstructionsDetailFragment(START_AT_BEGINING, mInstructions);
+            setUpInstructionsDetailFragment(mPosition, mInstructions);
             setUpIngredientsAndInstructionsFragment();
         } else {
             mTwoPane = false;
@@ -77,7 +85,7 @@ public class DetailsActivity extends AppCompatActivity implements InstructionsFr
             mFragmentManager.beginTransaction()
                     .replace(R.id.ingredients_fragment_container, mInstructionAndIngredients, null)
                     .commit();
-
+            mPosition = position;
             //pass information to fragment
             Bundle bundle = new Bundle();
             bundle.putParcelableArrayList("instructions", mInstructions);
@@ -105,8 +113,11 @@ public class DetailsActivity extends AppCompatActivity implements InstructionsFr
             detailInstructionFragment.setArguments(bundle);
         }
 
-
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("position", mPosition);
+    }
 }

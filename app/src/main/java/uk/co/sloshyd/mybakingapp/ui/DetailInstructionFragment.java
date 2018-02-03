@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -31,6 +32,7 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -58,6 +60,7 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
     private View.OnClickListener mNavigationClickListener;
     private ImageView mNavigateBack;
     private ImageView mNavigateForward;
+    private LinearLayout mBottomNavigation;
     private int mPosition;//holds position in the arraylist of the current ingredient
     private boolean mTwoPanes;
     private DetailInstructionFragment mDetailInstructionFragment;
@@ -72,13 +75,6 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
-        mMediaSession.setActive(false);// destroy the MediaSession
-
-    }
 
     public void releasePlayer() {
         if (mExoPlayer != null) {
@@ -97,75 +93,15 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         mData = getArguments().getParcelableArrayList("instruction");
         mPosition = getArguments().getInt("position");
         mTwoPanes = getArguments().getBoolean("twopanes");
-        Log.i(TAG, "Detail Instruction Fragment" + mTwoPanes);
         mThumbnail = rootView.findViewById(R.id.detail_instruction_iv_thumbnail);
         mNavigateBack = rootView.findViewById(R.id.detail_instruction_iv_navigation_back);
-        mNavigateBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mPosition >= 0 && mPosition < mData.size())
-                    if (mTwoPanes) {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
-                                  .commit();
-
-                    } else {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
-                                .commit();
-                    }
-
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("instruction", mData);
-                int newPosition;
-                if (mPosition == 0) {
-                    newPosition = 0;
-                } else {
-                    newPosition = mPosition - 1;
-                }
-                bundle.putInt("position", newPosition);
-                bundle.putBoolean("twopanes", mTwoPanes);
-                mDetailInstructionFragment.setArguments(bundle);
-                mDetailInstructionFragment.setArguments(bundle);
-            }
-
-        });
         mNavigateForward = rootView.findViewById(R.id.detail_instruction_iv_navigation_forward);
-        mNavigateForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mPosition >= 0 && mPosition < mData.size())
-                    if (mTwoPanes) {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
-                                .commit();
+        mBottomNavigation = rootView.findViewById(R.id.detail_instructions_bottom_navigation);
+        showNavigationButtons();
 
-                    } else {
-                        getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
-                                .commit();
-                    }
-
-
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("instruction", mData);
-                int newPosition;
-                if (mPosition >= mData.size()) {
-                    newPosition = mData.size();
-                } else {
-                    newPosition = mPosition + 1;
-                }
-                bundle.putInt("position", newPosition);
-                bundle.putBoolean("twopanes", mTwoPanes);
-                mDetailInstructionFragment.setArguments(bundle);
-                mDetailInstructionFragment.setArguments(bundle);
-            }
-
-        });
 //set up media player
         mExoPlayerView = rootView.findViewById(R.id.detail_instructions_fragment_media_player);
+
         if (mData.get(mPosition).getmVideoUrl().isEmpty())
 
         {
@@ -181,23 +117,95 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
             Uri uri = Uri.parse(mData.get(mPosition).getmVideoUrl());
             initializePlayer(uri);
         }
-        if (!mData.get(mPosition).
+        if (!mData.get(mPosition).getmThumbnail().isEmpty()){
 
-                getmThumbnail().isEmpty())
+            Picasso.with(getContext()).load(mData.get(mPosition).getmThumbnail())
+                    .resize(100, 100).into(mThumbnail);
+        } else {
 
-        {
-
-            Picasso.with(getContext()).load(mData.get(mPosition).getmThumbnail()).into(mThumbnail);//picasso handles incorrect URL or invalid return types
+            mThumbnail.setBackgroundColor(getContext().getResources().getColor(R.color.colorPrimary));
+            Picasso.with(getContext()).load(R.drawable.ic_cake_white_48dp).into(mThumbnail);
         }
 
         mDescription = rootView.findViewById(R.id.detail_instruction_tv_description);
-        mDescription.setText(mData.get(mPosition).
-
-                getmDescription());
+        mDescription.setText(mData.get(mPosition).getmDescription());
 
         return rootView;
     }
 
+    private void showNavigationButtons() {
+        if (!mTwoPanes) {
+            mNavigateBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (mPosition >= 0 && mPosition < mData.size())
+                        if (mTwoPanes) {
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
+                                    .commit();
+
+                        } else {
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
+                                    .commit();
+                        }
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("instruction", mData);
+                    int newPosition;
+                    if (mPosition == 0) {
+                        newPosition = 0;
+
+                    } else {
+                        newPosition = mPosition - 1;
+
+                    }
+                    bundle.putInt("position", newPosition);
+                    bundle.putBoolean("twopanes", mTwoPanes);
+                    mDetailInstructionFragment.setArguments(bundle);
+                    mDetailInstructionFragment.setArguments(bundle);
+                }
+
+            });
+
+            mNavigateForward.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mPosition >= 0 && mPosition < mData.size())
+                        if (mTwoPanes) {
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
+                                    .commit();
+
+                        } else {
+                            getActivity().getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
+                                    .commit();
+                        }
+
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("instruction", mData);
+                    int newPosition;
+                    if (mPosition >= mData.size()) {
+                        newPosition = mData.size();
+
+                    } else {
+                        newPosition = mPosition + 1;
+                    }
+                    bundle.putInt("position", newPosition);
+                    bundle.putBoolean("twopanes", mTwoPanes);
+                    mDetailInstructionFragment.setArguments(bundle);
+                    mDetailInstructionFragment.setArguments(bundle);
+                }
+
+            });
+        } else {
+            mBottomNavigation.setVisibility(View.GONE);
+        }
+    }
 
     public void initializePlayer(Uri sampleUri) {
         if (mExoPlayer == null) {
@@ -205,7 +213,7 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
             mExoPlayerView.setPlayer(mExoPlayer);
-
+            mExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
 
             //prepare media
             String userAgent = Util.getUserAgent(getContext(), "MyBakingApp");
@@ -315,5 +323,11 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         }
     }
 
-
+    @Override
+    public void onStop() {
+        super.onStop();
+        //can be in the onDestroy() but we want the player to STOP when we lose focus
+        releasePlayer();
+        mMediaSession.setActive(false);// destroy the MediaSession
+    }
 }

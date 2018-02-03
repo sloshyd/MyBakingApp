@@ -23,6 +23,9 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
     private ArrayList<InstructionsData>mData;
     private OnItemClickCallback onItemClickCallback;
     private Context mContext;
+    private int mSelectedPosition;
+    private static final int SELECTED_ITEM = 1;
+    private static final int UNSELECTED_ITEM =0;
 
     public InstructionsRecyclerAdapter (Context context){
         mContext = context;
@@ -34,14 +37,32 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
     }
 
     @Override
+    public int getItemViewType(int position) {
+        if(mSelectedPosition == position){
+            return SELECTED_ITEM;
+        }else {
+            return UNSELECTED_ITEM;
+        }
+
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.instructions_list_item, parent, false);
+        View view;
+        if(viewType == SELECTED_ITEM){
+            view = inflater.inflate(R.layout.instructions_list_item, parent, false);
+        } else{
+            view = inflater.inflate(R.layout.instructions_list_item, parent, false);
+            view.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+        }
+
+
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         final String recipeId = mData.get(position).getmRecipeId();
         final String stepNumber = mData.get(position).getmStepNumber();
@@ -52,8 +73,12 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
 
         //set onClickListener
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
+                mSelectedPosition = holder.getAdapterPosition();//select the new position
+                notifyDataSetChanged();// notify that data has changed and redraw
                 onItemClickCallback.onItemSelected(position);//return the position in arraylist
 
             }
@@ -77,6 +102,17 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
             // Force the RecyclerView to refresh
             this.notifyDataSetChanged();
         };
+    }
+
+    //used to get the selected position so it can be stored in fragment
+    public int getSelectedPosition(){
+        return mSelectedPosition;
+    }
+
+    //needed to return the last selected position before state change
+    public void setSelectedPosition(int position){
+        mSelectedPosition = position;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

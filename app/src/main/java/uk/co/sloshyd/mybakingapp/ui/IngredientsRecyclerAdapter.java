@@ -38,12 +38,11 @@ public class IngredientsRecyclerAdapter extends RecyclerView.Adapter<Ingredients
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String quantity = mData.get(position).getmQuantity();
-        String measure = mData.get(position).getmMeasure();
+        String measure = mData.get(position).getmMeasure().toLowerCase();
         String ingredient = mData.get(position).getmIngredientName();
-
-        holder.amountOfIngredients.setText(quantity);
-        holder.measurementType.setText(measure);
-        holder.nameOfIngredient.setText(ingredient);
+        String quantityAndMeasure = quantity + " " + measure;
+        holder.amountOfIngredients.setText(quantityAndMeasure);
+         holder.nameOfIngredient.setText(ingredient);
 
     }
 
@@ -61,14 +60,12 @@ public class IngredientsRecyclerAdapter extends RecyclerView.Adapter<Ingredients
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView amountOfIngredients;
-        private TextView measurementType;
         private TextView nameOfIngredient;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             amountOfIngredients = itemView.findViewById(R.id.ingredient_list_item_tv_quantity);
-            measurementType = itemView.findViewById(R.id.ingredient_list_item_tv_measure);
             nameOfIngredient = itemView.findViewById(R.id.ingredient_list_item_tv_ingredient_name);
         }
     }
