@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/ingredients_fragment_container"
-        android:layout_width="0dp"
+    <android.support.v4.app.FragmentTabHost
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tab_instructions_and_ingredients"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@drawable/border">
-    </FrameLayout>
+        android:layout_width="0dp"
+        android:layout_weight="0.75"
+        android:layout_marginTop="24dp"
+        />
+
 
     <FrameLayout
         android:id="@+id/detail_instruction_fragment_container"

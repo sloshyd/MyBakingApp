@@ -3,6 +3,7 @@ package uk.co.sloshyd.mybakingapp.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,9 +44,12 @@ import java.util.ArrayList;
 import uk.co.sloshyd.mybakingapp.R;
 import uk.co.sloshyd.mybakingapp.data.InstructionsData;
 
+import static android.view.View.GONE;
+
 
 /**
- * Created by Darren on 29/01/2018.
+ * Created by Darren on 29/01/2018. Fragment that holds the detailed instructions it manages
+ * between single view and multipane view
  */
 
 public class DetailInstructionFragment extends Fragment implements ExoPlayer.EventListener {
@@ -64,15 +68,15 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
     private int mPosition;//holds position in the arraylist of the current ingredient
     private boolean mTwoPanes;
     private DetailInstructionFragment mDetailInstructionFragment;
+    private long mExoplayerPosition;
 
 
     @Override
-
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeMediaSession();
-
-
+        if(savedInstanceState != null){
+            mExoplayerPosition = savedInstanceState.getLong("playerPosition");
+        }
     }
 
 
@@ -80,16 +84,17 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         if (mExoPlayer != null) {
             mExoPlayer.stop();
             mExoPlayer.release();
-
+            mExoPlayer = null;
         }
-        mExoPlayer = null;// important because you CANNOT reuse instance of player
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         final View rootView = inflater.inflate(R.layout.detail_instruction_fragment, container, false);
-        mDetailInstructionFragment = new DetailInstructionFragment();
+        //mDetailInstructionFragment = new DetailInstructionFragment();
         mData = getArguments().getParcelableArrayList("instruction");
         mPosition = getArguments().getInt("position");
         mTwoPanes = getArguments().getBoolean("twopanes");
@@ -99,40 +104,39 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         mBottomNavigation = rootView.findViewById(R.id.detail_instructions_bottom_navigation);
         showNavigationButtons();
 
-//set up media player
+        //set up media player
         mExoPlayerView = rootView.findViewById(R.id.detail_instructions_fragment_media_player);
 
-        if (mData.get(mPosition).getmVideoUrl().isEmpty())
+            if (!mData.get(mPosition).getmVideoUrl().isEmpty()) {
+                Uri uri = Uri.parse(mData.get(mPosition).getmVideoUrl());
+                if(savedInstanceState == null){
+                    initializeMediaSession();
+                    initializePlayer(uri);
+                } else{
+                    initializePlayer(uri);
+                    mExoPlayer.seekTo(mExoplayerPosition);
+                }
 
-        {
-            if (!mData.get(mPosition).getmThumbnail().isEmpty()) {
-                //TODO - load thumbnail
             } else {
-                //TODO - implement a custom image
+                mExoPlayerView.setVisibility(GONE);
             }
-        }
-        if (!mData.get(mPosition).getmVideoUrl().isEmpty())
+            if (!mData.get(mPosition).getmThumbnail().isEmpty()) {
 
-        {
-            Uri uri = Uri.parse(mData.get(mPosition).getmVideoUrl());
-            initializePlayer(uri);
-        }
-        if (!mData.get(mPosition).getmThumbnail().isEmpty()){
+                Picasso.with(getContext()).load(mData.get(mPosition).getmThumbnail())
+                        .resize(100, 100).into(mThumbnail);
+            } else {
 
-            Picasso.with(getContext()).load(mData.get(mPosition).getmThumbnail())
-                    .resize(100, 100).into(mThumbnail);
-        } else {
+                mThumbnail.setBackgroundColor(getContext().getResources().getColor(R.color.colorPrimary));
+                Picasso.with(getContext()).load(R.drawable.ic_cake_white_48dp).into(mThumbnail);
+            }
 
-            mThumbnail.setBackgroundColor(getContext().getResources().getColor(R.color.colorPrimary));
-            Picasso.with(getContext()).load(R.drawable.ic_cake_white_48dp).into(mThumbnail);
-        }
-
-        mDescription = rootView.findViewById(R.id.detail_instruction_tv_description);
-        mDescription.setText(mData.get(mPosition).getmDescription());
+            mDescription = rootView.findViewById(R.id.detail_instruction_tv_description);
+            mDescription.setText(mData.get(mPosition).getmDescription());
 
         return rootView;
     }
 
+    //only shown if the device is only showing single pane
     private void showNavigationButtons() {
         if (!mTwoPanes) {
             mNavigateBack.setOnClickListener(new View.OnClickListener() {
@@ -140,20 +144,11 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
                 public void onClick(View v) {
 
                     if (mPosition >= 0 && mPosition < mData.size())
-                        if (mTwoPanes) {
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
-                                    .commit();
 
-                        } else {
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
-                                    .commit();
-                        }
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.tab_instructions_and_ingredients, mDetailInstructionFragment)
+                                .commit();
 
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("instruction", mData);
                     int newPosition;
                     if (mPosition == 0) {
                         newPosition = 0;
@@ -162,10 +157,12 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
                         newPosition = mPosition - 1;
 
                     }
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("instruction", mData);
                     bundle.putInt("position", newPosition);
                     bundle.putBoolean("twopanes", mTwoPanes);
                     mDetailInstructionFragment.setArguments(bundle);
-                    mDetailInstructionFragment.setArguments(bundle);
+
                 }
 
             });
@@ -173,37 +170,29 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
             mNavigateForward.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mPosition >= 0 && mPosition < mData.size())
-                        if (mTwoPanes) {
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.detail_instruction_fragment_container, mDetailInstructionFragment)
-                                    .commit();
+                    if (mPosition >= 0 )
 
-                        } else {
-                            getActivity().getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.ingredients_fragment_container, mDetailInstructionFragment)
-                                    .commit();
-                        }
-
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("instruction", mData);
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.tab_instructions_and_ingredients, mDetailInstructionFragment)
+                                .commit();
                     int newPosition;
-                    if (mPosition >= mData.size()) {
-                        newPosition = mData.size();
+                    if (mPosition == mData.size()-1) {
+                        newPosition = mData.size()-1;
 
                     } else {
                         newPosition = mPosition + 1;
                     }
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("instruction", mData);
                     bundle.putInt("position", newPosition);
                     bundle.putBoolean("twopanes", mTwoPanes);
                     mDetailInstructionFragment.setArguments(bundle);
-                    mDetailInstructionFragment.setArguments(bundle);
+
                 }
 
             });
         } else {
-            mBottomNavigation.setVisibility(View.GONE);
+            mBottomNavigation.setVisibility(GONE);
         }
     }
 
@@ -221,7 +210,6 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
                     new DefaultDataSourceFactory(getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);//start playing as soon as ready
-
         }
     }
 
@@ -249,6 +237,7 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         } else if ((playbackState == ExoPlayer.STATE_READY)) {
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
+
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
 
@@ -267,30 +256,32 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
     //set up MediaSession to handle interaction with other apps or devices.  Need to keep
     //in sync with
     public void initializeMediaSession() {
-        //create MediaSession
-        mMediaSession = new MediaSessionCompat(getContext(), TAG);
-        //set Flags of features to support. MediaButtons are callbacks from external apps or devices TransportControl
 
-        mMediaSession.setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-        );
-        //Set MediaButtonReceiver and set to null - This will stop MediaButton from starting
-        //MediaSession which is desired behavior in this case.
-        mMediaSession.setMediaButtonReceiver(null);
-        //Set available actions this is done by creating a PlaybackStateCompt.Builder()
-        mStateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY |
-                                PlaybackStateCompat.ACTION_PAUSE |
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+            //create MediaSession
+            mMediaSession = new MediaSessionCompat(getContext(), TAG);
+            //set Flags of features to support. MediaButtons are callbacks from external apps or devices TransportControl
 
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        //Set Object to control callbacks mySessionCallbacks is an inner class that implements the appropriate callbacks
-        mMediaSession.setCallback(new MySessionCallback());
-        //Start the MediaSession - remember to stop MediaSession in on Destroy
-        mMediaSession.setActive(true);
+            mMediaSession.setFlags(
+                    MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                            MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            );
+            //Set MediaButtonReceiver and set to null - This will stop MediaButton from starting
+            //MediaSession which is desired behavior in this case.
+            mMediaSession.setMediaButtonReceiver(null);
+            //Set available actions this is done by creating a PlaybackStateCompt.Builder()
+            mStateBuilder = new PlaybackStateCompat.Builder()
+                    .setActions(
+                            PlaybackStateCompat.ACTION_PLAY |
+                                    PlaybackStateCompat.ACTION_PAUSE |
+                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                    PlaybackStateCompat.ACTION_PLAY_PAUSE);
+
+            mMediaSession.setPlaybackState(mStateBuilder.build());
+            //Set Object to control callbacks mySessionCallbacks is an inner class that implements the appropriate callbacks
+            mMediaSession.setCallback(new MySessionCallback());
+            //Start the MediaSession - remember to stop MediaSession in on Destroy
+            mMediaSession.setActive(true);
+
     }
 
 
@@ -303,6 +294,7 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
         @Override
         public void onPause() {
             mExoPlayer.setPlayWhenReady(false);
+
         }
 
         @Override
@@ -324,10 +316,16 @@ public class DetailInstructionFragment extends Fragment implements ExoPlayer.Eve
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        //can be in the onDestroy() but we want the player to STOP when we lose focus
+    public void onDestroyView() {
+        super.onDestroyView();
         releasePlayer();
-        mMediaSession.setActive(false);// destroy the MediaSession
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        long playerPostion = mExoPlayer.getCurrentPosition();
+        outState.putLong("playerPosition", playerPostion);//restore the position the play was at when state changed
     }
 }

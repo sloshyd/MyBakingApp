@@ -39,6 +39,7 @@ public class RecipeFragment extends android.support.v4.app.Fragment implements R
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.recipe_fragment_layout, container, false);
 
+        mRecipes = getArguments().getParcelableArrayList("recipes");
        //check which configuration to use
         if (rootView.findViewById(R.id.recipe_fragment_recipe_list_recycler_view) != null) {
             mTwoPanes = false;
@@ -54,21 +55,16 @@ public class RecipeFragment extends android.support.v4.app.Fragment implements R
 
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnClick(this);
-
+        mAdapter.swapData(mRecipes);
 
         return rootView;
     }
 
     public void setFragmentData(ArrayList<RecipeData> fragementData){
-        if(mRecipes != null){
-            return;
-        }
         mRecipes = fragementData;
         if(fragementData != null){
-            mAdapter.swapData(mRecipes);
             mAdapter.notifyDataSetChanged();
         }
-
     }
 
     /*method called when attached to Activity - check to see if the activity implements our

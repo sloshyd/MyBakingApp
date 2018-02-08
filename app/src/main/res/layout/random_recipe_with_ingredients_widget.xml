@@ -1,20 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:padding="@dimen/widget_margin">
+    android:layout_height="match_parent">
 
-    <ImageView
-
-        android:id="@+id/widget_info_iv"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/list_view_margin"
-        android:layout_weight="0.1"
-        android:gravity="center"
-        android:tint="@color/icons"
-        android:src="@drawable/ic_info_outline_black_24dp" />
+        android:orientation="horizontal">
+
 
     <LinearLayout
         android:layout_width="0dp"
@@ -40,12 +35,22 @@
 
 
     <ImageView
-        android:id="@+id/widget_next_iv"
+        android:id="@+id/widget_with_ingredients_next_iv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/list_view_margin"
         android:layout_weight="0.3"
         android:tint="@color/icons"
         android:src="@drawable/ic_navigate_next_black_24dp" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/random_recipe_with_ingredients_widget_lv_ingredients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/icons">
+
+    </ListView>
 
 </LinearLayout>

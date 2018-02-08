@@ -1,12 +1,18 @@
 package uk.co.sloshyd.mybakingapp.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.util.ArrayList;
 
+import services.MyBakingService;
 import uk.co.sloshyd.mybakingapp.R;
 import uk.co.sloshyd.mybakingapp.Utils;
 import uk.co.sloshyd.mybakingapp.data.DataLoader;
@@ -14,14 +20,15 @@ import uk.co.sloshyd.mybakingapp.data.IngredientsData;
 import uk.co.sloshyd.mybakingapp.data.InstructionsData;
 import uk.co.sloshyd.mybakingapp.data.RecipeData;
 
-public class RecipeListActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<String>, RecipeFragment.FragmentDataCallback {
+public class RecipeListActivity extends AppCompatActivity implements RecipeFragment.FragmentDataCallback {
 
     private static final String TAG = RecipeListActivity.class.getSimpleName();
-    private static final int DATA_LOADER_ID = 100;
+
     private ArrayList<RecipeData> mRecipes;
     private ArrayList<IngredientsData> mIngredients;
     private ArrayList<InstructionsData> mInstructions;
     private RecipeFragment mRecipeFragment;
+    private BroadcastReceiver mBroadcastReceiver;
 
 
     @Override
@@ -29,39 +36,35 @@ public class RecipeListActivity extends AppCompatActivity implements android.app
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_list);
 
-        getLoaderManager().initLoader(DATA_LOADER_ID, null, this);
+        //starts the service to get the data
+        MyBakingService.startActionGetApplicationData(this);
 
-         mRecipeFragment = new RecipeFragment();
-         mRecipeFragment.setFragmentDataCallback(this);
-
-
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .add(R.id.master_list_fragment_container, mRecipeFragment)
-                .commit();
-
-    }
+        mRecipeFragment = new RecipeFragment();
+        mRecipeFragment.setFragmentDataCallback(this);
 
 
-    @Override
-    public android.content.Loader<String> onCreateLoader(int id, Bundle args) {
-        return new DataLoader(this);
-    }
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //do here with response
+                String response = intent.getStringExtra("dataResponse");
+                mRecipes = Utils.getRecipes(response);
+                mIngredients = Utils.getIngredients(response);
+                mInstructions = Utils.getInstructions(response);
 
-    @Override
-    public void onLoadFinished(android.content.Loader<String> loader, String data) {
-        mRecipes = Utils.getRecipes(data);
-        mRecipeFragment.setFragmentData(mRecipes);
-        mIngredients = Utils.getIngredients(data);
-        mInstructions = Utils.getInstructions(data);
+                FragmentManager fm = getSupportFragmentManager();
+                fm.beginTransaction()
+                        .add(R.id.master_list_fragment_container, mRecipeFragment)
+                        .commit();
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList("recipes",mRecipes);
+                mRecipeFragment.setArguments(bundle);
 
-    }
+            }
 
-    @Override
-    public void onLoaderReset(android.content.Loader<String> loader) {
+        };
 
     }
-
 
     @Override
     public void fragmentData(String data) {
@@ -92,6 +95,22 @@ public class RecipeListActivity extends AppCompatActivity implements android.app
         }
         return tempIngredients;
 
+    }
+    //register the Listener
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mBroadcastReceiver, new IntentFilter("dataResponse"));
+    }
 
+    //in on pause remove the broacastListener
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
     }
 }
+
+
+

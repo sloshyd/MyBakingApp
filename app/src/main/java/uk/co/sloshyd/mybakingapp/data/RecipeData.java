@@ -1,10 +1,14 @@
 package uk.co.sloshyd.mybakingapp.data;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Darren on 25/01/2018.
  */
 
-public class RecipeData {
+public class RecipeData  implements Parcelable {
 
     private static final String TAG = RecipeData.class.getSimpleName();
     private String mRecipeId;
@@ -12,7 +16,13 @@ public class RecipeData {
     private String mServing;
     private String mImage;
 
-    public RecipeData (String recipeId, String recipeName, String serving, String image){
+    public RecipeData(Parcel in){
+        mRecipeId = in.readString();
+        mRecipeName = in.readString();
+        mImage = in.readString();
+        mServing = in.readString();
+    }
+    public RecipeData(String recipeId, String recipeName, String serving, String image){
 
         mRecipeId = recipeId;
         mRecipeName = recipeName;
@@ -20,6 +30,8 @@ public class RecipeData {
         mImage = image;
 
     }
+
+
     public String getmServing() {
         return mServing;
     }
@@ -64,4 +76,29 @@ public class RecipeData {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mRecipeId);
+        dest.writeString(mRecipeName);
+        dest.writeString(mServing);
+        dest.writeString(mImage);
+
+    }
+
+    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
+    public static final Parcelable.Creator<RecipeData> CREATOR
+            = new Parcelable.Creator<RecipeData>() {
+        public RecipeData createFromParcel(Parcel in){
+            return new RecipeData(in);
+        }
+
+        public RecipeData[] newArray(int size) {
+            return new RecipeData[size];
+        }
+    };
 }

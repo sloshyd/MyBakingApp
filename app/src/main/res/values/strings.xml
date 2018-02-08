@@ -8,5 +8,6 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_sample_name">Random Recipe Name</string>
+    <string name="widget_title">MyBakingApp - Recipe of the Day</string>
 
 </resources>

@@ -24,7 +24,6 @@
         android:gravity="center_vertical"
         android:textSize="26sp" />
 
-
     <TextView
         android:id="@+id/recipe_list_item_tv_number_served"
         android:layout_width="25dp"

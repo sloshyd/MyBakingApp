@@ -4,20 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:layout_marginStart="16dp"
-    android:layout_marginBottom="16dp">
+    android:layout_margin="16dp">
 
     <TextView
         android:id="@+id/ingredient_list_item_tv_quantity"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:textSize="18sp"/>
+        android:textSize="14sp"
+        android:textColor="@color/icons"/>
 
     <TextView
         android:id="@+id/ingredient_list_item_tv_ingredient_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="14sp"
+        android:textColor="@color/icons"
         />
 
 

@@ -2,33 +2,38 @@ package uk.co.sloshyd.mybakingapp.ui;
 
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import java.util.ArrayList;
+
 import uk.co.sloshyd.mybakingapp.R;
 import uk.co.sloshyd.mybakingapp.data.InstructionsData;
 
 /**
- * Created by Darren on 27/01/2018.
+ * Created by Darren on 27/01/2018. Custom RecyclerView adapter for Instructions information
  */
 
 public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<InstructionsRecyclerAdapter.ViewHolder> {
 
     public static final String TAG = InstructionsRecyclerAdapter.class.getSimpleName();
 
-    private ArrayList<InstructionsData>mData;
+    private ArrayList<InstructionsData> mData;
     private OnItemClickCallback onItemClickCallback;
     private Context mContext;
     private int mSelectedPosition;
     private static final int SELECTED_ITEM = 1;
-    private static final int UNSELECTED_ITEM =0;
+    private static final int UNSELECTED_ITEM = 0;
+    private boolean mTwoPanes;
 
-    public InstructionsRecyclerAdapter (Context context){
+    public InstructionsRecyclerAdapter(Context context, boolean twoPanes) {
         mContext = context;
+        mTwoPanes = twoPanes;
     }
 
     //used for communication with Fragment
@@ -38,11 +43,15 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
 
     @Override
     public int getItemViewType(int position) {
-        if(mSelectedPosition == position){
-            return SELECTED_ITEM;
-        }else {
+        if (mTwoPanes) {
+            if (mSelectedPosition == position) {
+                return SELECTED_ITEM;
+            } else {
+                return UNSELECTED_ITEM;
+            }
+        } else
             return UNSELECTED_ITEM;
-        }
+
 
     }
 
@@ -50,13 +59,14 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view;
-        if(viewType == SELECTED_ITEM){
+        if (viewType == SELECTED_ITEM) {
             view = inflater.inflate(R.layout.instructions_list_item, parent, false);
-        } else{
-            view = inflater.inflate(R.layout.instructions_list_item, parent, false);
-            view.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
-        }
+            view.setBackground(mContext.getDrawable(R.drawable.border_selected));
 
+        } else {
+            view = inflater.inflate(R.layout.instructions_list_item, parent, false);
+
+        }
 
         return new ViewHolder(view);
     }
@@ -64,7 +74,6 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        final String recipeId = mData.get(position).getmRecipeId();
         final String stepNumber = mData.get(position).getmStepNumber();
         holder.stepNumber.setText(stepNumber);
         String description = mData.get(position).getmShortDescription();
@@ -80,7 +89,6 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
                 mSelectedPosition = holder.getAdapterPosition();//select the new position
                 notifyDataSetChanged();// notify that data has changed and redraw
                 onItemClickCallback.onItemSelected(position);//return the position in arraylist
-
             }
         });
 
@@ -89,28 +97,29 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
 
     @Override
     public int getItemCount() {
-        if(mData != null){
+        if (mData != null) {
             return mData.size();
-        }else {
+        } else {
             return 0;
         }
     }
 
-    public void swapData(ArrayList<InstructionsData> data){
+    public void swapData(ArrayList<InstructionsData> data) {
         mData = data;
         if (mData != null) {
             // Force the RecyclerView to refresh
             this.notifyDataSetChanged();
-        };
+        }
+        ;
     }
 
     //used to get the selected position so it can be stored in fragment
-    public int getSelectedPosition(){
+    public int getSelectedPosition() {
         return mSelectedPosition;
     }
 
     //needed to return the last selected position before state change
-    public void setSelectedPosition(int position){
+    public void setSelectedPosition(int position) {
         mSelectedPosition = position;
         notifyDataSetChanged();
     }
@@ -128,7 +137,7 @@ public class InstructionsRecyclerAdapter extends RecyclerView.Adapter<Instructio
         }
     }
 
-    public void setOnItemClickCallback(OnItemClickCallback callback){
+    public void setOnItemClickCallback(OnItemClickCallback callback) {
         onItemClickCallback = callback;
     }
 }

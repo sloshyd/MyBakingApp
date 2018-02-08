@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 import uk.co.sloshyd.mybakingapp.data.IngredientsData;
@@ -197,5 +198,25 @@ public class Utils {
     }
 
 
+    public static int getRandomNumber(int max) {
 
+        Random random = new Random();
+        return random.nextInt(max);
+    }
+
+    public static String getDataFromServer() {
+        String response = null;
+
+        try {
+            URL dataUrl = Utils.getDataURL(Utils.DATA_URL);
+            response = Utils.getResponseFromHttpUrl(dataUrl);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DeniedByServerException e) {
+            e.printStackTrace();
+        }
+        //remove non ASCII char
+        response = response.replaceAll("[^\\p{ASCII}]", "");
+        return response;
+    }
 }

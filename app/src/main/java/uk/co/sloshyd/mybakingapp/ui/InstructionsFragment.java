@@ -22,8 +22,7 @@ import uk.co.sloshyd.mybakingapp.data.InstructionsData;
  * Created by Darren on 27/01/2018.
  */
 
-public class InstructionsFragment extends Fragment implements InstructionsRecyclerAdapter.OnItemClickCallback
-{
+public class InstructionsFragment extends Fragment implements InstructionsRecyclerAdapter.OnItemClickCallback {
 
     public static final String TAG = InstructionsFragment.class.getSimpleName();
     private InstructionsRecyclerAdapter mAdapter;
@@ -31,8 +30,9 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
     private ArrayList<IngredientsData> mIngredients;
     private FragmentDataCallback mFragmentDataCallback;
     private ArrayList<InstructionsData> mInstructions;
+    private boolean mTwoPanes;
 
-    interface FragmentDataCallback{
+    interface FragmentDataCallback {
         void fragmentData(int position, ArrayList<InstructionsData> recipeInstructions);
     }
 
@@ -40,24 +40,23 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mInstructions = getArguments().getParcelableArrayList("instructions");
-
+        mTwoPanes = getArguments().getBoolean("twopanes");
 
     }
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.instructions_fragment_layout, container, false);
         mRecyclerView = rootView.findViewById(R.id.ingredients_fragment_recycler_view);
-        mAdapter = new InstructionsRecyclerAdapter(getContext());
+        mAdapter = new InstructionsRecyclerAdapter(getContext(), mTwoPanes);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setOnItemClickCallback(this);
         mAdapter.swapData(mInstructions);
-        if(savedInstanceState != null){
-            int position = savedInstanceState.getInt("position");
-
+        if (savedInstanceState != null) {
             mRecyclerView.scrollToPosition(savedInstanceState.getInt("position"));
             mAdapter.setSelectedPosition(savedInstanceState.getInt("position"));
         }
+
         return rootView;
     }
 
@@ -65,11 +64,11 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
     //callback from InstructionsRecyclerAdapter
     @Override
     public void onItemSelected(int position) {
-       mFragmentDataCallback.fragmentData(position, mInstructions);//pass to DetailActivity
+        mFragmentDataCallback.fragmentData(position, mInstructions);//pass to DetailActivity
 
     }
 
-    public void setFragmentDataCallback(FragmentDataCallback callback){
+    public void setFragmentDataCallback(FragmentDataCallback callback) {
         mFragmentDataCallback = callback;
     }
 
@@ -87,6 +86,6 @@ public class InstructionsFragment extends Fragment implements InstructionsRecycl
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("position",mAdapter.getSelectedPosition());
+        outState.putInt("position", mAdapter.getSelectedPosition());
     }
 }
