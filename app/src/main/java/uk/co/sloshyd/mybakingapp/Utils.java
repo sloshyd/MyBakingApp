@@ -217,6 +217,7 @@ public class Utils {
         }
         //remove non ASCII char
         response = response.replaceAll("[^\\p{ASCII}]", "");
+        Log.i(TAG, "r" + response);
         return response;
     }
 }

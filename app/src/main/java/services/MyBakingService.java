@@ -1,17 +1,13 @@
 package services;
 
-import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.media.DeniedByServerException;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import providers.RandomRecipeWidgetProvider;
@@ -37,7 +33,7 @@ public class MyBakingService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(Intent intent) {
 
         String action = intent.getAction();
         if (intent != null) {
@@ -62,6 +58,7 @@ public class MyBakingService extends IntentService {
     }
 
     private void handleActionUpdateWidget() {
+
         String response = Utils.getDataFromServer();
         ArrayList<RecipeData> recipeData = Utils.getRecipes(response);
         int select = Utils.getRandomNumber(recipeData.size());
@@ -88,7 +85,9 @@ public class MyBakingService extends IntentService {
 
 
 
-    public static void startActionGetApplicationData(Context context) {
+    public static void startActionGetApplicationData
+            (Context context) {
+
         Intent i = new Intent(context, MyBakingService.class);
         i.setAction(ACTION_GET_APP_DATA);
         context.startService(i);
@@ -100,9 +99,6 @@ public class MyBakingService extends IntentService {
         i.setAction(ACTION_UPDATE_WIDGET);
         context.startService(i);
     }
-
-
-
 
 
 }

@@ -5,17 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 import services.MyBakingService;
 import uk.co.sloshyd.mybakingapp.R;
 import uk.co.sloshyd.mybakingapp.Utils;
-import uk.co.sloshyd.mybakingapp.data.DataLoader;
 import uk.co.sloshyd.mybakingapp.data.IngredientsData;
 import uk.co.sloshyd.mybakingapp.data.InstructionsData;
 import uk.co.sloshyd.mybakingapp.data.RecipeData;
@@ -29,6 +30,8 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeFragm
     private ArrayList<InstructionsData> mInstructions;
     private RecipeFragment mRecipeFragment;
     private BroadcastReceiver mBroadcastReceiver;
+
+
 
 
     @Override
@@ -47,6 +50,7 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeFragm
             @Override
             public void onReceive(Context context, Intent intent) {
                 //do here with response
+
                 String response = intent.getStringExtra("dataResponse");
                 mRecipes = Utils.getRecipes(response);
                 mIngredients = Utils.getIngredients(response);
@@ -60,11 +64,13 @@ public class RecipeListActivity extends AppCompatActivity implements RecipeFragm
                 bundle.putParcelableArrayList("recipes",mRecipes);
                 mRecipeFragment.setArguments(bundle);
 
+
             }
 
         };
 
     }
+
 
     @Override
     public void fragmentData(String data) {

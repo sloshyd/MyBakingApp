@@ -49,9 +49,6 @@ public class ListWidgetService extends RemoteViewsService {
             mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
 
-
-
-
         }
 
         @Override
